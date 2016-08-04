@@ -54,12 +54,7 @@ module Resque
       # Sends a HTTP Post to the Slack api.
       #
       def report_exception
-        begin
-          notification = Notification.new(self, self.class.level)
-        rescue => e
-          bt = e.backtrace
-          puts e
-        end
+        notification = Notification.new(self, self.class.level)
         payload = {:channel => self.class.channel, :token => self.class.token, :text => notification.text}
         post_message_uri = URI.parse(SLACK_URL + '/chat.postMessage')
         Net::HTTP.post_form(post_message_uri, payload)
