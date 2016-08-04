@@ -16,26 +16,30 @@ module Resque
       # Returns the worker & queue linked to the failed job
       #
       def msg_worker
-        "*Worker #{@failure.worker} failed processing #{@failure.queue}*"
+        "*Worker #{@failure.worker} failed processing #{@failure.queue}*
+"
       end
 
       # Returns the formatted payload linked to the failed job
       #
       def msg_payload
-        "*Payload:*\n```#{format_message(@failure.payload.inspect.split('\n'))}```"
+        "*Payload:* \n ```#{format_message(@failure.payload.inspect.split('\n'))}```
+"
       end
 
       # Returns the formatted exception linked to the failed job
       #
       def msg_exception
-        "*Exception:*\n`#{exception}`"
+        "*Exception:* \n `#{exception}` "
       end
 
       # Returns the formatted exception linked to the failed job with backtrace
       # as a slack snippet
       def msg_exception_with_backtrace
+        content = ''
+        content = exception.backtrace.join('\n') if exception.backtrace #not all exceptions have a backtrace, for instance PruneDeadWorkerDirtyExit
         {
-            content: exception.backtrace.join('\n'),
+            content: content,
             filetype: 'text',
             filename: 'full_backtrace.txt',
             token: @failure.class.token,

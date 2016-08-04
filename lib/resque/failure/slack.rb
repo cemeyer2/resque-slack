@@ -1,6 +1,7 @@
 require 'resque'
 require 'uri'
 require 'net/http'
+require 'resque/failure/notification'
 
 module Resque
   module Failure
@@ -10,7 +11,7 @@ module Resque
 
       class << self
         attr_accessor :channel # Slack channel id.
-        attr_accessor :token   # Team token
+        attr_accessor :token # Team token
 
         # Notification style:
         #
@@ -53,7 +54,12 @@ module Resque
       # Sends a HTTP Post to the Slack api.
       #
       def report_exception
-        notification = Notification.new(self, level)
+        begin
+          notification = Notification.new(self, self.class.level)
+        rescue => e
+          bt = e.backtrace
+          puts e
+        end
         payload = {:channel => self.class.channel, :token => self.class.token, :text => notification.text}
         post_message_uri = URI.parse(SLACK_URL + '/chat.postMessage')
         Net::HTTP.post_form(post_message_uri, payload)
@@ -65,4 +71,3 @@ module Resque
     end
   end
 end
-
