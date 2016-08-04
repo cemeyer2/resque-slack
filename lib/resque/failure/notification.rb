@@ -16,7 +16,7 @@ module Resque
       # Returns the worker & queue linked to the failed job
       #
       def msg_worker
-        "*Worker #{@failure.worker} failed processing #{@failure.queue}*"
+        ["*Worker:* #{@failure.worker} failed processing*","*Queue:* #{@failure.queue}"]
       end
 
       # Returns the formatted payload linked to the failed job
