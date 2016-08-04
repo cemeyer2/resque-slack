@@ -3,9 +3,9 @@ $LOAD_PATH.push File.expand_path('../lib/resque/failure', __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = 'resque-slack'
-  s.version     = '0.1.0'
-  s.authors     = ['Julien Blanchard']
-  s.email       = ['julien@sideburns.eu']
+  s.version     = '0.1.1'
+  s.authors     = ['Julien Blanchard', 'Charlie Meyer']
+  s.email       = ['julien@sideburns.eu', 'charlie@charliemeyer.net']
   s.homepage    = 'https://www.github.com/julienXX/resque-slack'
   s.summary     = %q{Post Slack notifications whenever one of your Resque jobs fails}
   s.description = %q{Slack notifications for your failed jobs}

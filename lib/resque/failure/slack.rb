@@ -47,22 +47,20 @@ module Resque
       # When a job fails, a new instance is created and #save is called.
       def save
         return unless self.class.configured?
-
         report_exception
       end
 
       # Sends a HTTP Post to the Slack api.
       #
       def report_exception
-        uri = URI.parse(SLACK_URL + '/chat.postMessage')
-        params = { 'channel' => self.class.channel, 'token' => self.class.token, 'text' => text }
-        Net::HTTP.post_form(uri, params)
-      end
-
-      # Text to be displayed in the Slack notification
-      #
-      def text
-        Notification.generate(self, self.class.level)
+        notification = Notification.new(self, level)
+        payload = {:channel => self.class.channel, :token => self.class.token, :text => notification.text}
+        post_message_uri = URI.parse(SLACK_URL + '/chat.postMessage')
+        Net::HTTP.post_form(post_message_uri, payload)
+        if notification.file
+          upload_file_uri = URI.parse(SLACK_URL + '/files.upload')
+          Net::HTTP.post_form(upload_file_uri, notification.file)
+        end
       end
     end
   end

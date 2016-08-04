@@ -4,7 +4,7 @@ source 'http://rubygems.org'
 gemspec
 
 group :development do
-  gem 'resque', github: 'resque/resque', branch: '1-x-stable'
+  gem 'resque', github: 'resque/resque'
 end
 
 group :test do

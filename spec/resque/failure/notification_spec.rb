@@ -5,15 +5,24 @@ describe Resque::Failure::Notification do
   Resque::Failure::Slack::LEVELS.each do |level|
     context "level #{level}" do
       it 'returns the wanted format text' do
-        notification = described_class.generate(failure, level)
-        expect(notification).to eq expected_notification[level]
+        notification = described_class.new(failure, level)
+        expect(notification.text).to eq expected_text[level]
+        expect(notification.file).to eq expected_file[level]
       end
 
-      def expected_notification
+      def expected_text
         {
-          verbose: "worker failed processing queue\nPayload:\n\t\"payload\"\nException:\nexception\n\tbacktrace",
-          compact: "worker failed processing queue\nPayload:\n\t\"payload\"\nException:\nexception",
-          minimal: "worker failed processing queue\nPayload:\n\t\"payload\""
+          verbose: "*Worker worker failed processing queue*\\n*Payload:*\n```\t\"payload\"```",
+          compact: "*Worker worker failed processing queue*\\n*Payload:*\n```\t\"payload\"```\\n*Exception:*\n`exception`",
+          minimal: "*Worker worker failed processing queue*\\n*Payload:*\n```\t\"payload\"```"
+        }
+      end
+
+      def expected_file
+        {
+            verbose: {:content=>"backtrace", :filetype=>"text", :filename=>"full_backtrace.txt", :token=>nil, :title=>"Full Exception Backtrace", :channel=>nil},
+            compact: nil,
+            minimal: nil
         }
       end
     end

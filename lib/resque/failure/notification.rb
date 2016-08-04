@@ -2,21 +2,13 @@ module Resque
   module Failure
     class Notification
 
-      # Generate the text to be displayed in the Slack Notification
-      #
-      # failure: resque failure
-      # level: notification style
-      def self.generate(failure, level)
-        new(failure, level).generate
-      end
+      attr_reader :text, :file
 
       def initialize(failure, level)
         @failure = failure
         @level   = level
-      end
-
-      def generate
-        send(@level)
+        @text = ''
+        send(level.to_sym)
       end
 
       protected
@@ -24,43 +16,51 @@ module Resque
       # Returns the worker & queue linked to the failed job
       #
       def msg_worker
-        "#{@failure.worker} failed processing #{@failure.queue}"
+        "*Worker #{@failure.worker} failed processing #{@failure.queue}*"
       end
 
       # Returns the formatted payload linked to the failed job
       #
       def msg_payload
-        "Payload:\n#{format_message(@failure.payload.inspect.split('\n'))}"
+        "*Payload:*\n```#{format_message(@failure.payload.inspect.split('\n'))}```"
       end
 
       # Returns the formatted exception linked to the failed job
       #
       def msg_exception
-        "Exception:\n#{exception}"
+        "*Exception:*\n`#{exception}`"
       end
 
       # Returns the formatted exception linked to the failed job with backtrace
-      #
+      # as a slack snippet
       def msg_exception_with_backtrace
-        "#{msg_exception}\n#{format_message(exception.backtrace)}"
+        {
+            content: exception.backtrace.join('\n'),
+            filetype: 'text',
+            filename: 'full_backtrace.txt',
+            token: @failure.class.token,
+            title: 'Full Exception Backtrace',
+            channel: @failure.class.channel
+        }
       end
 
-      # Returns the verbose text notification
-      #
+      # Sets the text to be the worker and its payload,
+      # the backtrace to be a snippet attachment
       def verbose
-        "#{msg_worker}\n#{msg_payload}\n#{msg_exception_with_backtrace}"
+        @text = [msg_worker, msg_payload].join('\n')
+        @file = msg_exception_with_backtrace
       end
 
       # Returns the compact text notification
       #
       def compact
-        "#{msg_worker}\n#{msg_payload}\n#{msg_exception}"
+        @text = [msg_worker, msg_payload, msg_exception].join('\n')
       end
 
       # Returns the minimal text notification
       #
       def minimal
-        "#{msg_worker}\n#{msg_payload}"
+        @text = [msg_worker, msg_payload].join('\n')
       end
 
       def format_message(obj)
