@@ -16,19 +16,19 @@ module Resque
       # Returns the worker & queue linked to the failed job
       #
       def msg_worker
-        " * Worker #{@failure.worker} failed processing #{@failure.queue} * "
+        "*Worker #{@failure.worker} failed processing #{@failure.queue}*"
       end
 
       # Returns the formatted payload linked to the failed job
       #
       def msg_payload
-        " * Payload: * \n ```#{format_message(@failure.payload.inspect.split('\n'))}``` "
+        ["*Payload:*","```#{format_message(@failure.payload.inspect.split('\n'))}```"]
       end
 
       # Returns the formatted exception linked to the failed job
       #
       def msg_exception
-        " * Exception: * \n `#{exception}` "
+        ["*Exception:*", "`#{exception}`"]
       end
 
       # Returns the formatted exception linked to the failed job with backtrace
@@ -49,20 +49,20 @@ module Resque
       # Sets the text to be the worker and its payload,
       # the backtrace to be a snippet attachment
       def verbose
-        @text = [msg_worker, msg_payload].join('\n')
+        @text = [msg_worker, msg_payload].flatten.join(' \n ')
         @file = msg_exception_with_backtrace
       end
 
       # Returns the compact text notification
       #
       def compact
-        @text = [msg_worker, msg_payload, msg_exception].join('\n')
+        @text = [msg_worker, msg_payload, msg_exception].flatten.join(' \n ')
       end
 
       # Returns the minimal text notification
       #
       def minimal
-        @text = [msg_worker, msg_payload].join('\n')
+        @text = [msg_worker, msg_payload].flatten.join(' \n ')
       end
 
       def format_message(obj)
