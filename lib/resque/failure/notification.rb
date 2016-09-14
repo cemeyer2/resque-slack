@@ -31,6 +31,14 @@ module Resque
         ["*Exception:*", "`#{exception}`"]
       end
 
+      def msg_env
+        if Rails && Rails.env
+          ["*Environment:* #{Rails.env}"]
+        else
+          []
+        end
+      end
+
       # Returns the formatted exception linked to the failed job with backtrace
       # as a slack snippet
       def msg_exception_with_backtrace
@@ -49,20 +57,20 @@ module Resque
       # Sets the text to be the worker and its payload,
       # the backtrace to be a snippet attachment
       def verbose
-        @text = [msg_worker, msg_payload].flatten.join(" \n ")
+        @text = [msg_worker, msg_env, msg_payload].flatten.join(" \n ")
         @file = msg_exception_with_backtrace
       end
 
       # Returns the compact text notification
       #
       def compact
-        @text = [msg_worker, msg_payload, msg_exception].flatten.join(" \n ")
+        @text = [msg_worker, msg_env, msg_payload, msg_exception].flatten.join(" \n ")
       end
 
       # Returns the minimal text notification
       #
       def minimal
-        @text = [msg_worker, msg_payload].flatten.join(" \n ")
+        @text = [msg_worker, msg_env, msg_payload].flatten.join(" \n ")
       end
 
       def format_message(obj)
