@@ -3,7 +3,7 @@ $LOAD_PATH.push File.expand_path('../lib/resque/failure', __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = 'resque-slack'
-  s.version     = '0.1.2'
+  s.version     = '0.1.3'
   s.authors     = ['Julien Blanchard', 'Charlie Meyer']
   s.email       = ['julien@sideburns.eu', 'charlie@charliemeyer.net']
   s.homepage    = 'https://www.github.com/julienXX/resque-slack'
