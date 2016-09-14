@@ -32,7 +32,7 @@ module Resque
       end
 
       def msg_env
-        if Rails && Rails.env
+        if Object.const_defined?('Rails') && Rails.env
           ["*Environment:* #{Rails.env}"]
         else
           []
